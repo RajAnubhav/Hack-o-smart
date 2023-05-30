@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div id="show1"></div>
+    <hr>
+    <div id="show2"></div>
+    <hr>
+    <div id="maps"></div>
+    
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+    <script src="map.js"></script>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYW51YmhhdnJhajcyOSIsImEiOiJjbGhhZWd3bGQwZ291M3BsdDcxbDk1ZTY3In0.oULRPTY4j10PaUMncG1GgA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [79, 21],// setting centre to india
+            zoom: 3      // zoomed the maped 3x
+        });
+    </script>
+
+
+    <script>
+
+        // Define the function to be called every 100 seconds
+        function myFunction() {
+            var xhr = new XMLHttpRequest();
+            var url = "https://api.thingspeak.com/channels/2133543/fields/1.json?results=2";
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById("show1").innerHTML = JSON.stringify(response);
+                    console.log(response);
+                }
+            };
+            xhr.send();
+        }
+        function latitudeAPI() {
+            var xhr = new XMLHttpRequest();
+            var url = "https://api.thingspeak.com/channels/2134495/feeds.json?results=2";
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById("show2").innerHTML = JSON.stringify(response.feeds);
+                    console.log(response);
+                }
+            };
+            xhr.send();
+
+
+        }
+        // function longitudeAPI() {
+        //     var xhr = new XMLHttpRequest();
+        //     var url = "https://api.thingspeak.com/channels/2133543/fields/3.json?results=2";
+        //     xhr.open("GET", url, true);
+        //     xhr.onreadystatechange = function () {
+        //         if (xhr.readyState == 4 && xhr.status == 200) {
+        //             var response = JSON.parse(xhr.responseText);
+        //             document.getElementById("show3").innerHTML = JSON.stringify(response.feeds);
+        //             console.log(response);
+        //         }
+        //     };
+        //     xhr.send();
+        // }
+        // Clear the interval after a specified number of calls (optional)
+        // setTimeout(function () {
+        //     window.location.reload();
+        //     myFunction();
+        // }, 30000);
+        setInterval(() => {
+            // myFunction();
+            latitudeAPI();
+        }, 3000);
+        setInterval(() => {
+            myFunction();
+            // latitudeAPI();
+        }, 5000);
+
+// 
+
+    </script>
+</body>
+
+</html>

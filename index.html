@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://images.unsplash.com/photo-1532004252750-b411a84c8a41?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80);
+            background-repeat: no repeat;
+            background-position: center;
+            object-fit: fill;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            width: 80%;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            border: 1px solid #dddddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #3e8e41;
+        }
+
+        .cancelled {
+            color: red;
+            font-weight: bold;
+        }
+
+        .score {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .toggleable {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin Page</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <!-- <th>Overspeeding Instances</th> -->
+                <th>Driving License Score</th>
+                <th>Score</th>
+                <!-- <th>Operation</th> -->
+                <!-- <th>Link</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="user"></td>
+                <!-- <td id="overspeeding_instances"></td> -->
+                <td id="driving_license"></td>
+                <td class="score" id="score"></td>
+                <!-- <td id="eligibility"></td> -->
+                <!-- <td id="link"></td> -->
+            </tr>
+        </tbody>
+    </table>
+
+
+
+    <div style="display: flex;">
+        <div
+            style="display:flex; background-color: rgb(252, 226, 226); border: 2px solid black; border-radius: 5px; margin: 10px; width: 50%; height: 300px; padding: 10px;">
+            <table>
+
+                <td style="width: 100px; height: 100px; margin-left: 10px; background-color: aliceblue;">
+                    <div style="margin: 0px 0px 45px 0px">School/College</div>
+                    <div id="s" style="font-size: 30px;"></div>
+                    <div>25kmph</div>
+                </td>
+                <td style="width: 100px; height: 100px; margin-left: 10px; background-color: wheat;">
+                    <div style="margin: 0px 0px 45px 0px">Hospital</div>
+                    <div id="h" style="font-size: 30px;"></div>
+                    <div>30kmph</div>
+                </td>
+                <td style="width: 100px; height: 100px; margin-left: 10px; background-color: rgb(166, 202, 166);">
+                    <div style="margin: 0px 0px 45px 0px">Diversion</div>
+                    <div id="d" style="font-size: 30px;"></div>
+                    <div>15kmph</div>
+                </td>
+                <td style="width: 150px; height: 100px; margin-left: 10px; background-color: rgb(239, 239, 178);">
+                    <div style="margin: 0px 0px 45px 0px">Free Zone</div>
+                    <div id="f" style="font-size: 30px;"></div>
+                    <div>50kmph</div>
+                </td>
+
+            </table>
+        </div>
+        <div
+            style="background-color: rgb(252, 226, 226); border: 2px solid black; border-radius: 5px; margin: 10px; width: 50%; height: 300px;">
+            <table style="margin: 100px;">
+                <td>
+                    <div>Mode</div>
+                    <hr>
+                    <div id="mode">--</div>
+                </td>
+                <!-- <td>
+                    <div>Location</div>
+                    <hr>
+                    <div id="location">--</div>
+                </td> -->
+                <td>
+                    <div>Speed</div>
+                    <hr>
+                    <div id="speed">--</div>
+                </td>
+                <td>
+                    <div>Score</div>
+                    <hr>
+                    <div id="scoreDashboard">--</div>
+                </td>
+                <!-- <td>
+                    <div>Overspeeding</div>
+                    <hr>
+                    <div id="overspeeding">--</div>
+                </td> -->
+            </table>
+        </div>
+    </div>
+
+
+    <div id="show1"></div>
+    <div id="show2"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-database.js"></script>
+
+    <script>
+        let score=0;
+        const divs = document.querySelectorAll('.toggleable');
+        divs.forEach((div) => {
+            div.addEventListener('click', (event) => {
+                divs.forEach((d) => {
+                    if (d !== div) {
+                        d.classList.remove('active');
+                    }
+                });
+                div.classList.toggle('active');
+            });
+        });
+
+        var firebaseConfig = {
+            // Your Firebase project configuration object
+            apiKey: "AIzaSyAVXftjtU3qNtVG7LGQCz8vLVDzhrXb6Bk",
+            authDomain: "database-70430.firebaseapp.com",
+            databaseURL: "https://database-70430-default-rtdb.firebaseio.com",
+            projectId: "database-70430",
+            storageBucket: "database-70430.appspot.com",
+            messagingSenderId: "304186209320",
+            appId: "1:304186209320:web:737a43220d1e066f21f11d"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+
+        var databaseRef = firebase.database().ref();
+        databaseRef.on("value", function (snapshot) {
+            // Code to handle the snapshot of the data
+            // console.log(snapshot);
+        });
+
+        databaseRef.on("value", function (snapshot) {
+            var data = snapshot.val();
+            // Code to display the data on the web page
+            console.log(data);
+            // document.getElementById("score").innerHTML=JSON.stringify(data);
+        });
+
+        databaseRef.on("value", function (snapshot) {
+            var data = snapshot.val();
+            // var myElement = document.getElementById("score");
+            document.getElementById("driving_license").innerHTML = data["Driving Liscence"];
+            document.getElementById("user").innerHTML = data.Name;
+            // document.getElementById("overspeeding_instances").innerHTML = data.Instances;
+            document.getElementById("score").innerHTML = data.Score;
+            console.log(data.GlobalTag);
+            var schoolData = data.School;
+            console.log("school data score: ", schoolData.Score);
+            var hospitalData = data.Hospital;
+            // console.log(hospitalData.Tag);
+            var diversionData = data.Diversion;
+            // console.log(diversionData.Tag);
+            var freeData = data.Freezone;
+            // console.log(freeData.Tag);
+            if (schoolData.Tag === data.GlobalTag) {
+                
+                document.getElementById("h").innerHTML=" ";
+                document.getElementById("s").innerHTML=" ";
+                document.getElementById("d").innerHTML=" ";
+                document.getElementById("f").innerHTML=" ";
+                document.getElementById("s").innerHTML="📍";
+                console.log(document.getElementById("s"));
+                console.log("School data is coming:");
+                document.getElementById("mode").innerHTML = "School";
+                var speed = schoolData.Speed;
+                document.getElementById("speed").innerHTML = speed;
+                document.getElementById("scoreDashboard").innerHTML= schoolData.Score;
+                document.getElementById("score").innerHTML= schoolData.Score;
+            }
+            else if (hospitalData.Tag === data.GlobalTag) {
+                document.getElementById("h").innerHTML=" ";
+                document.getElementById("s").innerHTML=" ";
+                document.getElementById("d").innerHTML=" ";
+                document.getElementById("f").innerHTML=" ";
+                document.getElementById("h").innerHTML="📍";
+                console.log("Hospital data is coming:");
+                document.getElementById("mode").innerHTML = "Hospital";
+                var speed = hospitalData.Speed;
+                document.getElementById("speed").innerHTML = speed;
+                document.getElementById("scoreDashboard").innerHTML= hospitalData.Score;
+                document.getElementById("score").innerHTML= hospitalData.Score;
+
+            }
+            else if (diversionData.Tag === data.GlobalTag) {
+                document.getElementById("h").innerHTML=" ";
+                document.getElementById("s").innerHTML=" ";
+                document.getElementById("d").innerHTML=" ";
+                document.getElementById("f").innerHTML=" ";
+                document.getElementById("d").innerHTML="📍";
+                console.log("Diversion data is coming:");
+                document.getElementById("mode").innerHTML = "Diversion";
+                var speed = diversionData.Speed;
+                document.getElementById("speed").innerHTML = speed;
+                document.getElementById("scoreDashboard").innerHTML= diversionData.Score;
+                document.getElementById("score").innerHTML= diversionData.Score;
+
+            }
+            else if (freeData.Tag === data.GlobalTag) {
+                document.getElementById("h").innerHTML=" ";
+                document.getElementById("s").innerHTML=" ";
+                document.getElementById("d").innerHTML=" ";
+                document.getElementById("f").innerHTML=" ";
+                document.getElementById("f").innerHTML="📍";
+                console.log("Free Zone data is coming:");
+                document.getElementById("mode").innerHTML = "Free Zone";
+                var speed = freeData.Speed;
+                document.getElementById("speed").innerHTML = speed;
+                document.getElementById("scoreDashboard").innerHTML= freeData.Score;
+                document.getElementById("score").innerHTML= freeData.Score;
+
+            }
+            score = schoolData.score;
+            data.score = score; 
+            console.log(schoolData.score);
+            if (schoolData.score >= "0") {
+                document.getElementById("eligibility").innerHTML = "✅";
+            } else {
+                document.getElementById("eligibility").innerHTML = "❌";
+            }
+        });
+
+    </script>
+
+
+    <script>
+
+
+
+        // Define the function to be called every 100 seconds
+        function myFunction() {
+            var xhr = new XMLHttpRequest();
+            var url = "https://api.thingspeak.com/channels/2133543/fields/1.json?results=2";
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    const feedRes = response.feeds.map(obj => obj.field1);
+
+                    console.log(feedRes);
+                }
+            };
+            xhr.send();
+        }
+
+        const open = (() => {
+            window.location = "track.html";
+        })
+        setInterval(() => {
+            myFunction();
+            // latitudeAPI();
+        }, 5000);
+
+// 
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
